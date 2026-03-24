@@ -1,17 +1,17 @@
-# 📇 Business Card Scanner
+# Business Card Scanner
 
-> An AI-powered Python script that extracts contact information from business card photos and saves them to a local Excel file automatically.
+> An AI-powered Python script that extracts contact information from business card photos and saves them to a local Excel file **automatically**.
 
 ---
 
 ## ✨ Features
 
-- 📸 Reads business card images from a local `input/` folder
-- 🤖 Uses **Gemini 2.5 Flash** Vision to extract: Full Name, Position, Company, Phone, Email
-- 💾 Appends each contact as a new row in a local **Excel file** (`contacts.xlsx`)
-- 📁 Moves processed images to a `processed/` folder
-- 🔁 Supports batch processing (multiple cards at once)
-- 🛡️ Handles missing fields by returning an empty string
+- Reads business card images from a local `input/` folder
+- Uses **Gemini 2.5 Flash** Vision to extract: Full Name, Position, Company, Phone, Email
+- Appends each contact as a new row in a local **Excel file** (`contacts.xlsx`)
+- Moves processed images to a `processed/` folder
+- Supports batch processing (multiple cards at once)
+- Handles missing fields by returning an empty string
 
 ---
 
@@ -75,9 +75,9 @@ python business_card_scanner.py
 
 ## 📊 Output format (Excel)
 
-| Full Name | Position | Company   | Phone       | Email       | Processed At        | Source File  |
-|-----------|----------|-----------|-------------|-------------|---------------------|--------------|
-| Alina D   | CTO      | Work Corp | +4123456789 | ad@work.com | 2026-03-24 10:22:01 | card_001.jpg |
+| Full Name     | Position | Company   | Phone       | Email       | Processed At        | Source File  |
+|---------------|----------|-----------|-------------|-------------|---------------------|--------------|
+| Alina Denzler | CTO      | Work Corp | +4125252525 | ad@work.com | 2026-03-24 10:22:01 | card_001.jpg |
 
 The file is created automatically on the first run. Each new run appends rows — it never overwrites existing data.
 
