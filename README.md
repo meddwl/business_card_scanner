@@ -1,6 +1,6 @@
 # Business Card Scanner
 
-> An AI-powered Python script that extracts contact information from business card photos and saves them to a local Excel file **automatically**.
+An AI-powered Python script that extracts contact information from business card photos and saves them to a local Excel file **automatically**.
 
 ---
 
