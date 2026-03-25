@@ -18,7 +18,7 @@ An AI-powered Python script that extracts contact information from business card
 ## 🗂️ Project Structure
 
 ```
-business-card-scanner/
+business_card_scanner/
 ├── input/                      ← Drop your business card images here
 ├── processed/                  ← Processed images land here automatically
 ├── contacts.xlsx               ← Created automatically on first run
@@ -33,11 +33,17 @@ business-card-scanner/
 
 ## ⚙️ Setup
 
-### 1. Clone & install dependencies
+### 1. Clone repo 
 
 ```bash
 git clone https://github.com/meddwl/business_card_scanner.git
 cd business_card_scanner
+```
+### Install dependencies
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
