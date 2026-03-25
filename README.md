@@ -36,8 +36,8 @@ business-card-scanner/
 ### 1. Clone & install dependencies
 
 ```bash
-git clone https://github.com/meddwl/business-card-scanner.git
-cd business-card-scanner
+git clone https://github.com/meddwl/business_card_scanner.git
+cd business_card_scanner
 pip install -r requirements.txt
 ```
 
@@ -75,9 +75,9 @@ python business_card_scanner.py
 
 ## 📊 Output format (Excel)
 
-| Full Name     | Position | Company   | Phone       | Email       | Processed At        | Source File  |
-|---------------|----------|-----------|-------------|-------------|---------------------|--------------|
-| Alina Denzler | CTO      | Work Corp | +4125252525 | ad@work.com | 2026-03-24 10:22:01 | card_001.jpg |
+| Full Name     | Position | Company   | Phone       | Email      | Processed At        | Source File  |
+|---------------|----------|-----------|-------------|------------|---------------------|--------------|
+| Alina Denzler | CTO      | Work Corp | +4125252525 | ad@work.ch | 2026-03-24 10:22:01 | card_001.jpg |
 
 The file is created automatically on the first run. Each new run appends rows — it never overwrites existing data.
 
