@@ -103,7 +103,7 @@ def extract_contact(client, image_path: Path) -> dict | None:
     for attempt in range(3):
         try:
             response = client.models.generate_content(
-                model="gemini-3-pro-preview",
+                model="gemini-2.5-flash",
                 contents=["Extract all contact information from this business card.", image_part],
                 config=types.GenerateContentConfig(
                     system_instruction=SYSTEM_INSTRUCTION,
