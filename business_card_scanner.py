@@ -2,13 +2,15 @@ import os
 import json
 import shutil
 import time
+from io import BytesIO
 from pathlib import Path
 from datetime import datetime
-
+ 
 from google import genai
 from google.genai import types
 from openpyxl import Workbook, load_workbook
 from dotenv import load_dotenv
+from PIL import Image, ImageEnhance, ImageFilter
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
@@ -42,6 +44,51 @@ Output format:
 def get_gemini_client():
     """Create and return a Gemini client using the new google.genai SDK."""
     return genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+# ── Image preprocessing ───────────────────────────────────────────────────────
+ 
+def preprocess_image(image_path: Path) -> bytes:
+    """
+    Normalise a business card photo before sending to the AI:
+      1. Auto-rotate using EXIF orientation tag (fixes iPhone portrait/landscape)
+      2. Convert to RGB (handles HEIC, RGBA, palette modes)
+      3. Resize to a consistent width — large enough for text, small enough for fast API calls
+      4. Sharpen slightly to improve text readability
+      5. Boost contrast to help with colourful or dark backgrounds
+    Returns raw JPEG bytes.
+    """
+    img = Image.open(image_path)
+ 
+    # 1. Auto-rotate based on EXIF orientation (critical for iPhone HEIC photos)
+    exif = img.getexif()
+    orientation_tag = 274  # EXIF tag for Orientation
+    if exif and orientation_tag in exif:
+        orientation = exif[orientation_tag]
+        rotation_map = {3: 180, 6: 270, 8: 90}
+        if orientation in rotation_map:
+            img = img.rotate(rotation_map[orientation], expand=True)
+ 
+    # 2. Convert to RGB (HEIC files can be other modes; JPEG doesn't support RGBA)
+    if img.mode != "RGB":
+        img = img.convert("RGB")
+ 
+    # 3. Resize: scale down if wider than 1600px, leave smaller images untouched
+    max_width = 1600
+    if img.width > max_width:
+        ratio = max_width / img.width
+        new_size = (max_width, int(img.height * ratio))
+        img = img.resize(new_size, Image.LANCZOS)
+ 
+    # 4. Sharpen to make text crisper
+    img = img.filter(ImageFilter.SHARPEN)
+ 
+    # 5. Boost contrast slightly — helps with colourful/dark backgrounds
+    img = ImageEnhance.Contrast(img).enhance(1.3)
+ 
+    # Return as JPEG bytes
+    buffer = BytesIO()
+    img.save(buffer, format="JPEG", quality=90)
+    return buffer.getvalue()
 
 # ── Excel ─────────────────────────────────────────────────────────────────────
 
@@ -95,11 +142,21 @@ def load_image_part(image_path: Path) -> types.Part:
 
 
 def extract_contact(client, image_path: Path) -> dict | None:
-    """Send image to Gemini and return extracted contact as a dict.
+    """
+    Preprocess the image, send it to Gemini 2.5 Flash,
+    and return the extracted contact as a dict.
     Retries up to 3 times on rate limit errors (429).
     """
-    image_part = load_image_part(image_path)
-
+    print(f"  🔧 Preprocessing image...")
+    try:
+        image_bytes = preprocess_image(image_path)
+    except Exception as e:
+        print(f"  ⚠️  Preprocessing failed, sending original: {e}")
+        with open(image_path, "rb") as f:
+            image_bytes = f.read()
+ 
+    image_part = types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
+ 
     for attempt in range(3):
         try:
             response = client.models.generate_content(
@@ -152,7 +209,7 @@ def main():
 
     print(f"🔍 Found {len(images)} image(s) to process.\n")
 
-    print("🤖 Initialising Gemini 2.5 Flas ...")
+    print("🤖 Initialising Gemini 2.5 Flash ...")
     try:
         client = get_gemini_client()
         print("  ✅ Client ready.\n")
